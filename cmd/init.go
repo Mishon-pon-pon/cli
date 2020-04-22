@@ -65,12 +65,17 @@ func initConfiguration() {
  / /_/ / /___  | |/ / /___/ /___/ /_/ / ____/ /___/ _, _/___/ / 
 /_____/_____/  |___/_____/_____/\____/_/   /_____/_/ |_|/____/  
 `
-	fmt.Println(hello)
-	file, err := os.Create("fso_config.json")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer file.Close()
+	if _, err := os.Stat("fso_config.json"); os.IsNotExist(err) {
+		fmt.Println(hello)
+		file, err := os.Create("fso_config.json")
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer file.Close()
 
-	file.WriteString(initjson.DefaultJson)
+		file.WriteString(initjson.DefaultJson)
+	} else {
+		fmt.Println("\nВ этой папке уже была инициализация. Смотрите файл fso_config.json")
+	}
+
 }

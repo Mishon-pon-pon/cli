@@ -28,8 +28,8 @@ import (
 
 // userCmd represents the user command
 var userCmd = &cobra.Command{
-	Use:   "user",
-	Short: "Предоставляет пароли и логины пользователей. Имеет флаги",
+	Use:   "users",
+	Short: "Предоставляет пароли и логины пользователей.",
 	Long: `A longer description that spans multiple lines and likely contains examples
 and usage of using your command. For example:
 

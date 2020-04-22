@@ -37,7 +37,8 @@ var mpemCmd = &cobra.Command{
 	Short: "Пока в разработке. Будет делать миграцию js кода PageElement в файл на диске",
 	Long:  `Пока в разработке команда`,
 	Run: func(cmd *cobra.Command, args []string) {
-		metaPageElementMigrate()
+		// metaPageElementMigrate()
+		fmt.Println("Пока в разработке")
 	},
 }
 
