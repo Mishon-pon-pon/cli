@@ -55,6 +55,7 @@ func init() {
 	// fsoUpdateCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
+// FSOUpdate ...
 func FSOUpdate() {
 	cmd, _ := exec.LookPath(`powershell.exe`)
 	dir, _ := os.Executable()

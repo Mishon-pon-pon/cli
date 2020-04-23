@@ -17,11 +17,8 @@ package cmd
 
 import (
 	"database/sql"
-	"encoding/json"
 	"fmt"
-	"fso/internal/db"
 	"log"
-	"os"
 
 	"github.com/spf13/cobra"
 )
@@ -56,23 +53,15 @@ func init() {
 	// userCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
+// User ...
 func User() {
 	type user struct {
 		Account  string
 		Password string
 	}
-	config, err := os.Open("fso_config.json")
-	if err != nil {
-		log.Fatal("В текущей дирректории нет файла fso_config.json.", "\n Ошибка:", err)
-	}
 
-	var db db.DB
-	encoder := json.NewDecoder(config)
-	err = encoder.Decode(&db)
-	if err != nil {
-		log.Fatal("Не удалось декодировать fso_config.json", "\nОшибка:", err)
-	}
-	database, err := sql.Open("mssql", db.Connection.ConnectionString)
+	config := NewConfig()
+	database, err := sql.Open(config.DataBase.DBManager, config.DataBase.DataBaseURL)
 	rows, err := database.Query(`SELECT u.Password,
 									    a.Account
 									FROM Account a 

@@ -18,6 +18,7 @@ package cmd
 import (
 	"fmt"
 	"fso/internal/init/initjson"
+	"fso/internal/version"
 	"log"
 	"os"
 
@@ -53,27 +54,15 @@ func init() {
 }
 
 func initConfiguration() {
-	hello := `
-    ___________ ____ 
-   / ____/ ___// __ \
-  / /_   \__ \/ / / /
- / __/  ___/ / /_/ / 
-/_/    /____/\____/ 
-    ____  _______    __________    ____  ____  __________  _____
-   / __ \/ ____/ |  / / ____/ /   / __ \/ __ \/ ____/ __ \/ ___/
-  / / / / __/  | | / / __/ / /   / / / / /_/ / __/ / /_/ /\__ \ 
- / /_/ / /___  | |/ / /___/ /___/ /_/ / ____/ /___/ _, _/___/ / 
-/_____/_____/  |___/_____/_____/\____/_/   /_____/_/ |_|/____/  
-`
 	if _, err := os.Stat("fso_config.json"); os.IsNotExist(err) {
-		fmt.Println(hello)
+		fmt.Println(version.Version)
 		file, err := os.Create("fso_config.json")
 		if err != nil {
 			log.Fatal(err)
 		}
 		defer file.Close()
 
-		file.WriteString(initjson.DefaultJson)
+		file.WriteString(initjson.DefaultJSON)
 	} else {
 		fmt.Println("\nВ этой папке уже была инициализация. Смотрите файл fso_config.json")
 	}

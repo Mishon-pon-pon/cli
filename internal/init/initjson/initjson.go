@@ -1,11 +1,16 @@
 package initjson
 
-var DefaultJson string = `{
-	"connection": {
-		"connectionString": "server=IP_сервера;user=Имя_Пользователя;password=Пароль;database=База_Данных"
+// DefaultJSON ...
+var DefaultJSON string = `{
+	"DataBase": {
+		"connectionString": "server=IP_сервера;user=Имя_Пользователя;password=Пароль;database=База_Данных",
+		"db_manager": "mssql"
 	},
-	"dev_repository": {
-		"path": "полный путь до dev репозитория"
+	"Repository": {
+		"remotePath": "полный путь до удаленного репозитория",
+		"devPath": "полный путь до dev репозитория",
+		"testPath": "полный путь до test репозитория"
+ 
 	}
 }
 `

@@ -16,7 +16,12 @@ limitations under the License.
 package cmd
 
 import (
+	"encoding/json"
 	"fmt"
+	"fso/internal/db"
+	"fso/internal/repo"
+	"fso/internal/version"
+	"log"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -25,28 +30,33 @@ import (
 	"github.com/spf13/viper"
 )
 
+var config *Config
+
+// Config ...
+type Config struct {
+	DataBase   *db.Config
+	Repository *repo.Config
+}
+
+// NewConfig ...
+func NewConfig() *Config {
+	if config != nil {
+		return config
+	}
+	config = &Config{
+		DataBase:   db.NewConfig(),
+		Repository: repo.NewConfig(),
+	}
+	return config
+}
+
 var cfgFile string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "fso",
 	Short: "CLI для FSO прогеров",
-	Long: `
-    ___________ ____ 
-   / ____/ ___// __ \
-  / /_   \__ \/ / / /
- / __/  ___/ / /_/ / 
-/_/    /____/\____/ 
-    ____  _______    __________    ____  ____  __________  _____
-   / __ \/ ____/ |  / / ____/ /   / __ \/ __ \/ ____/ __ \/ ___/
-  / / / / __/  | | / / __/ / /   / / / / /_/ / __/ / /_/ /\__ \ 
- / /_/ / /___  | |/ / /___/ /___/ /_/ / ____/ /___/ _, _/___/ / 
-/_____/_____/  |___/_____/_____/\____/_/   /_____/_/ |_|/____/  
-        ____   ____   ___
- _   __/ __ \ / __ \ <  /
-| | / / / / // / / / / / 
-| |/ / /_/ // /_/ / / /  
-|___/\____(_)____(_)_/  
+	Long: version.Version + `
 
 	CLI для FSO прогеров.
 
@@ -68,6 +78,18 @@ func Execute() {
 }
 
 func init() {
+	configs := NewConfig()
+	file, err := os.Open("fso_config.json")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	jsonConf := json.NewDecoder(file)
+	err = jsonConf.Decode(configs)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	cobra.OnInitialize(initConfig)
 
 	// Here you will define your flags and configuration settings.

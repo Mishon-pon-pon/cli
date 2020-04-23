@@ -16,7 +16,6 @@ limitations under the License.
 package cmd
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 	"os"
@@ -46,14 +45,6 @@ var devPullCmd = &cobra.Command{
 	},
 }
 
-type Repository struct {
-	Dev_repository struct {
-		Path string `json:"path"`
-	}
-}
-
-var dev_repository Repository
-
 func init() {
 	rootCmd.AddCommand(devPullCmd)
 
@@ -69,26 +60,13 @@ func init() {
 
 }
 
+// DevPull ...
 func DevPull() {
 	ps, _ := exec.LookPath("powershell.exe")
-	var userAccept string
 
-	config, err := os.Open(`fso_config.json`)
-	if err != nil {
-		log.Fatal(err)
-	}
+	conf := NewConfig()
 
-	defer config.Close()
-
-	decoder := json.NewDecoder(config)
-	err = decoder.Decode(&dev_repository)
-	if err != nil {
-		log.Fatal(err)
-	}
-	comand := "cd " + dev_repository.Dev_repository.Path
-	fmt.Println(comand)
-
-	cmd := exec.Command(ps, "cd", dev_repository.Dev_repository.Path, "\ngit pull")
+	cmd := exec.Command(ps, "cd", conf.Repository.DevPath, "\ngit pull")
 
 	fmt.Println("Основной репозиторий:")
 	out, err := cmd.Output()
@@ -96,14 +74,13 @@ func DevPull() {
 		log.Fatal(err)
 	}
 	fmt.Println(string(out))
+
+	var userAccept string
 	fmt.Print(`Хотите обновить субмодуль? y(да)\n(нет)`)
 	fmt.Fscan(os.Stdin, &userAccept)
 
 	if userAccept == "y" {
-		cmd = exec.Command(ps, `
-		cd \\10.1.12.87\c$\Foresight\kzk2018
-		git submodule update --init
-	`)
+		cmd = exec.Command(ps, "cd", conf.Repository.DevPath, "\ngit submodule update --init")
 		fmt.Println("Субмодуль:")
 		out, err = cmd.Output()
 		if err != nil {
