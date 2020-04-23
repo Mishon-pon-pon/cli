@@ -64,7 +64,7 @@ func init() {
 func DevPull() {
 	ps, _ := exec.LookPath("powershell.exe")
 
-	conf := NewConfig()
+	conf := GetConfig()
 
 	cmd := exec.Command(ps, "cd", conf.Repository.DevPath, "\ngit pull")
 

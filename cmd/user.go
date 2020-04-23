@@ -60,7 +60,7 @@ func User() {
 		Password string
 	}
 
-	config := NewConfig()
+	config := GetConfig()
 	database, err := sql.Open(config.DataBase.DBManager, config.DataBase.DataBaseURL)
 	rows, err := database.Query(`SELECT u.Password,
 									    a.Account

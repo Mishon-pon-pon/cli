@@ -39,7 +39,7 @@ type Config struct {
 }
 
 // NewConfig ...
-func NewConfig() *Config {
+func GetConfig() *Config {
 	if config != nil {
 		return config
 	}
@@ -78,7 +78,7 @@ func Execute() {
 }
 
 func init() {
-	configs := NewConfig()
+	configs := GetConfig()
 	file, err := os.Open("fso_config.json")
 	if err != nil {
 		log.Fatal(err)
