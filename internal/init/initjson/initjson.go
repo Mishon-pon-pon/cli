@@ -3,7 +3,7 @@ package initjson
 // DefaultJSON ...
 var DefaultJSON string = `{
 	"DataBase": {
-		"connectionString": "server=IP_сервера;user=Имя_Пользователя;password=Пароль;database=База_Данных",
+		"connectionString": "server=IP_сервера;user id=Имя_Пользователя;password=Пароль;database=База_Данных",
 		"db_manager": "mssql"
 	},
 	"Repository": {

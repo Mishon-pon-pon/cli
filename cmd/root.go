@@ -81,13 +81,13 @@ func init() {
 	configs := GetConfig()
 	file, err := os.Open("fso_config.json")
 	if err != nil {
-		log.Fatal(err)
-	}
-
-	jsonConf := json.NewDecoder(file)
-	err = jsonConf.Decode(configs)
-	if err != nil {
-		log.Fatal(err)
+		fmt.Println("fso не проинициализированно. Выполните fso init")
+	} else {
+		jsonConf := json.NewDecoder(file)
+		err = jsonConf.Decode(configs)
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 
 	cobra.OnInitialize(initConfig)
