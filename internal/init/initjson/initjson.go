@@ -11,6 +11,12 @@ var DefaultJSON string = `{
 		"devPath": "полный путь до dev репозитория",
 		"testPath": "полный путь до test репозитория"
  
+	}, 
+	"Modules": {
+		"newsresder": {
+			"pathFrom": "путь до модуля",
+			"pathIn": "путь до папки куда будем устанавливать"
+		}
 	}
 }
 `

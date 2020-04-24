@@ -21,6 +21,7 @@ import (
 	"fso/internal/version"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -64,6 +65,20 @@ func initConfiguration() {
 
 		file.WriteString(initjson.DefaultJSON)
 	} else {
+		conf := GetConfig()
+		newJSON := strings.Replace(initjson.DefaultJSON, "server=IP_сервера;user id=Имя_Пользователя;password=Пароль;database=База_Данных", conf.DataBase.DataBaseURL, -1)
+		newJSON = strings.Replace(newJSON, "mssql", conf.DataBase.DBManager, -1)
+		newJSON = strings.Replace(newJSON, "полный путь до удаленного репозитория", conf.Repository.RemotePath, -1)
+		newJSON = strings.Replace(newJSON, "полный путь до dev репозитория", conf.Repository.DevPath, -1)
+		newJSON = strings.Replace(newJSON, "полный путь до test репозитория", conf.Repository.TestPath, -1)
+
+		file, err := os.Create("fso_config.json")
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer file.Close()
+
+		file.WriteString(newJSON)
 		fmt.Println("\nВ этой папке уже была инициализация. Смотрите файл fso_config.json")
 	}
 

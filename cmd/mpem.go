@@ -44,7 +44,7 @@ var mpemCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(mpemCmd)
-	rootCmd.PersistentFlags().StringVarP(&PageElementName, "page-element", "p", "", "page element name")
+	mpemCmd.PersistentFlags().StringVarP(&PageElementName, "page-element", "p", "", "page element name")
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command

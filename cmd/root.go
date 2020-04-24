@@ -19,6 +19,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"fso/internal/db"
+	"fso/internal/modules"
 	"fso/internal/repo"
 	"fso/internal/version"
 	"log"
@@ -26,7 +27,6 @@ import (
 
 	"github.com/spf13/cobra"
 
-	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/viper"
 )
 
@@ -36,9 +36,10 @@ var config *Config
 type Config struct {
 	DataBase   *db.Config
 	Repository *repo.Config
+	Modules    map[string]*modules.Config
 }
 
-// NewConfig ...
+// GetConfig ...
 func GetConfig() *Config {
 	if config != nil {
 		return config
@@ -78,6 +79,18 @@ func Execute() {
 }
 
 func init() {
+
+	// cobra.OnInitialize(initConfig)
+
+	// Here you will define your flags and configuration settings.
+	// Cobra supports persistent flags, which, if defined here,
+	// will be global for your application.
+
+	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is fso_config.json)")
+
+	// if cfgFile == "" {
+	// 	cfgFile = "fso_config.json"
+	// }
 	configs := GetConfig()
 	file, err := os.Open("fso_config.json")
 	if err != nil {
@@ -90,14 +103,6 @@ func init() {
 		}
 	}
 
-	cobra.OnInitialize(initConfig)
-
-	// Here you will define your flags and configuration settings.
-	// Cobra supports persistent flags, which, if defined here,
-	// will be global for your application.
-
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.fso.yaml)")
-
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
@@ -109,22 +114,23 @@ func initConfig() {
 		// Use config file from the flag.
 		viper.SetConfigFile(cfgFile)
 	} else {
-		// Find home directory.
-		home, err := homedir.Dir()
-		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
-		}
+		// // Find home directory.
+		// home, err := homedir.Dir()
+		// if err != nil {
+		// 	fmt.Println(err)
+		// 	os.Exit(1)
+		// }
 
-		// Search config in home directory with name ".fso" (without extension).
-		viper.AddConfigPath(home)
-		viper.SetConfigName(".fso")
+		// // Search config in home directory with name ".fso" (without extension).
+		// viper.AddConfigPath(home)
+		// viper.SetConfigName(".fso")
+		viper.SetConfigFile("fso_config.json")
 	}
 
 	viper.AutomaticEnv() // read in environment variables that match
 
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
-		fmt.Println("Using config file:", viper.ConfigFileUsed())
+		fmt.Println("Используется конфигаруционный файл:", viper.ConfigFileUsed())
 	}
 }
