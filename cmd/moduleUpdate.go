@@ -149,7 +149,7 @@ func copyFile(from, in string) error {
 	fileIn, err := os.Create(in)
 	defer fileIn.Close()
 	if err != nil {
-		return &CopyError{err: err, msg: "\nНе удалось создать файл " + from}
+		return &CopyError{err: err, msg: "\nНе удалось создать файл " + in}
 	}
 	_, err = io.Copy(fileIn, fileFrom)
 	if err != nil {
@@ -160,7 +160,14 @@ func copyFile(from, in string) error {
 
 // CopyModule ...
 func (m *Module) CopyModule(from string, in string) error {
-
+	if strings.Contains(in, "/") {
+		inPathsArr := strings.Split(in, "/")
+		path, _ := os.Getwd()
+		for i := 0; i < len(inPathsArr); i++ {
+			path += "/" + inPathsArr[i]
+			os.Mkdir(path, 0666)
+		}
+	}
 	return filepath.Walk(from, func(path string, info os.FileInfo, err error) error {
 		path = strings.Replace(path, `\`, "/", -1)
 		fromFile := path
