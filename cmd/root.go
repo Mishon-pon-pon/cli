@@ -94,7 +94,7 @@ func init() {
 	configs := GetConfig()
 	file, err := os.Open("fso_config.json")
 	if err != nil {
-		fmt.Println("fso не проинициализированно. Выполните fso init")
+		log.Fatal("fso не проинициализированно. Выполните fso init")
 	} else {
 		jsonConf := json.NewDecoder(file)
 		err = jsonConf.Decode(configs)

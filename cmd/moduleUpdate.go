@@ -16,14 +16,9 @@ limitations under the License.
 package cmd
 
 import (
-	"errors"
 	"fmt"
-	"io"
+	"fso/internal/modules"
 	"log"
-	"os"
-	"os/exec"
-	"path/filepath"
-	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -38,16 +33,16 @@ var moduleUpdateCmd = &cobra.Command{
 	cli обновляет npm пакет, затем идет в этот пакет по имя_модуля.
 	Берет от туда файлы и переносит их в папку которую вы добавили в fso_config в поле pathIn`,
 	Run: func(cmd *cobra.Command, args []string) {
-		m := NewModule()
+		m := modules.NewModule()
 		m.UpdateNodeModules()
 
 		fmt.Println("node_modules обновлены")
 		fmt.Println("\nОбновление модуля проекта...")
 
 		config := GetConfig()
-		if err := m.FindModule(moduleName, config); err == nil {
-			m.DeleteModule(moduleName, config)
-			err := m.CopyModule(config.Modules[moduleName].PathFrom, config.Modules[moduleName].PathIn)
+		if err := m.FindModule(moduleName, config.Modules); err == nil {
+			m.DeleteModule(moduleName, config.Modules)
+			err := m.CopyModule(config.Modules[moduleName].PathFrom, config.Modules[moduleName].PathIn, moduleName, config.Modules)
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -72,176 +67,4 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// moduleUpdateCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-}
-
-// Module ...
-type Module struct {
-	ConfigFiles map[string][]string
-}
-
-func NewModule() *Module {
-	return &Module{}
-}
-
-// UpdateNodeModules ...
-func (m *Module) UpdateNodeModules() {
-	ps, err := exec.LookPath("powershell.exe")
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println("Обновление node_modules...")
-	c := exec.Command(ps, "npm update")
-	c.Stdout = os.Stdout
-	c.Stderr = os.Stderr
-
-	c.Run()
-	// o, err := c.Output()
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// if string(o) != "" {
-	// 	fmt.Println(string(o))
-	// } else {
-	// 	// fmt.Println("Нет изменений в текущей версии модуля")
-	// }
-}
-
-// FindModule ...
-func (m *Module) FindModule(moduleName string, config *Config) error {
-	if _, ok := config.Modules[moduleName]; ok {
-		if config.Modules[moduleName].PathFrom == "" {
-			found := false
-			return filepath.Walk("node_modules/", func(path string, info os.FileInfo, err error) error {
-				if err != nil {
-					fmt.Printf("prevent panic by handling failure accessing a path %q: %v\n", path, err)
-					return err
-				}
-				path = strings.Replace(path, `\`, "/", -1)
-				if info.IsDir() {
-					if strings.Contains(path, moduleName) && !found {
-						config.Modules[moduleName].PathFrom = path
-						found = true
-					}
-				}
-				return nil
-			})
-		}
-		return nil
-	}
-	return errors.New("\nНет такого модуля, либо он не указан в fso_config.json")
-}
-
-// CopyError ...
-type CopyError struct {
-	err error
-	msg string
-}
-
-func (c *CopyError) Error() string { return c.msg }
-
-func copyFile(from, in string) error {
-	fileFrom, err := os.Open(from)
-	defer fileFrom.Close()
-	if err != nil {
-		return &CopyError{err: err, msg: "\nНе удалось открыть файл " + from}
-	}
-
-	fileIn, err := os.Create(in)
-	defer fileIn.Close()
-	if err != nil {
-		return &CopyError{err: err, msg: "\nНе удалось создать файл " + in}
-	}
-	_, err = io.Copy(fileIn, fileFrom)
-	if err != nil {
-		return &CopyError{err: err, msg: "\nНе удалось скопировать файл " + from}
-	}
-	return nil
-}
-
-// CopyModule ...
-func (m *Module) CopyModule(from string, in string) error {
-	if strings.Contains(in, "/") {
-		inPathsArr := strings.Split(in, "/")
-		path, _ := os.Getwd()
-		for i := 0; i < len(inPathsArr); i++ {
-			path += "/" + inPathsArr[i]
-			os.Mkdir(path, 0666)
-		}
-	}
-	return filepath.Walk(from, func(path string, info os.FileInfo, err error) error {
-		path = strings.Replace(path, `\`, "/", -1)
-		fromFile := path
-		inFile := strings.Replace(path, from, in, -1)
-		if !info.IsDir() {
-			if !strings.Contains(path, ".config") {
-				err = copyFile(fromFile, inFile)
-				if err != nil {
-					return err
-				}
-			} else {
-				toCopy := true
-				confFrom := strings.Replace(path, from, "", -1)
-				for i := 0; i < len(m.ConfigFiles[moduleName]); i++ {
-					confIn := m.ConfigFiles[moduleName][i]
-					var comfirmPath string
-					if len(confIn) > len(confFrom) {
-						comfirmPath = strings.Replace(confIn, confFrom, "", -1)
-					} else {
-						comfirmPath = strings.Replace(confFrom, confIn, "", -1)
-					}
-					if comfirmPath == `` || comfirmPath == `/` || comfirmPath == `\` {
-						toCopy = false
-					}
-				}
-				if toCopy {
-					copyFile(fromFile, inFile)
-				}
-
-			}
-
-		} else {
-			path = strings.Replace(path, from, in, -1)
-			os.Mkdir(path, 0666)
-		}
-
-		return nil
-	})
-}
-
-// DeleteModule ...
-func (m *Module) DeleteModule(moduleName string, config *Config) error {
-	m.ConfigFiles = map[string][]string{}
-	in := config.Modules[moduleName].PathIn
-	if in != "" {
-		removeDir := make(map[string]bool)
-		allDir := []string{}
-		filepath.Walk(in, func(path string, info os.FileInfo, err error) error {
-			path = strings.Replace(path, `\`, "/", -1)
-			allDir = append(allDir, path)
-			if strings.Contains(path, ".config") {
-				confIn := strings.Replace(path, in, "", -1)
-				m.ConfigFiles[moduleName] = append(m.ConfigFiles[moduleName], confIn)
-				pathArr := strings.Split(path, "/")
-				for _, v := range pathArr {
-					removeDir[v] = true
-				}
-			}
-			return nil
-		})
-		for _, path := range allDir {
-			pathDirArr := strings.Split(path, "/")
-			for _, dir := range pathDirArr {
-				if dir != "" {
-					if _, ok := removeDir[dir]; ok {
-
-					} else {
-						os.RemoveAll(path)
-					}
-				}
-
-			}
-		}
-	}
-
-	return nil
 }
