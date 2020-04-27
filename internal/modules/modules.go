@@ -8,12 +8,17 @@ type Config struct {
 
 // Module ...
 type Module struct {
-	ConfigFiles map[string][]string
+	/* folderThatContainConfig нужен для того чтобы
+	 * при удалении папок знать в какийх папках
+	 * хроняться конфиги .config
+	 * используется в DeleteModuel и в CopyModule
+	 */
+	folderThatContainConfig map[string][]string
 }
 
 // NewModule - constructor Module
 func NewModule() *Module {
-	return &Module{}
+	return &Module{folderThatContainConfig: map[string][]string{}}
 }
 
 // CopyError ...

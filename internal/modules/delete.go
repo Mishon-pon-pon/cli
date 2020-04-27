@@ -8,7 +8,6 @@ import (
 
 // DeleteModule ...
 func (m *Module) DeleteModule(moduleName string, moduleNames map[string]*Config) error {
-	m.ConfigFiles = map[string][]string{}
 	in := moduleNames[moduleName].PathIn
 	if in != "" {
 		removeDir := make(map[string]bool)
@@ -18,7 +17,7 @@ func (m *Module) DeleteModule(moduleName string, moduleNames map[string]*Config)
 			allDir = append(allDir, path)
 			if strings.Contains(path, ".config") {
 				confIn := strings.Replace(path, in, "", -1)
-				m.ConfigFiles[moduleName] = append(m.ConfigFiles[moduleName], confIn)
+				m.folderThatContainConfig[moduleName] = append(m.folderThatContainConfig[moduleName], confIn)
 				pathArr := strings.Split(path, "/")
 				for _, v := range pathArr {
 					removeDir[v] = true

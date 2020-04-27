@@ -49,8 +49,8 @@ func (m *Module) CopyModule(from string, in string, moduleName string, moduleNam
 			} else {
 				toCopy := true
 				confFrom := strings.Replace(path, from, "", -1)
-				for i := 0; i < len(m.ConfigFiles[moduleName]); i++ {
-					confIn := m.ConfigFiles[moduleName][i]
+				for i := 0; i < len(m.folderThatContainConfig[moduleName]); i++ {
+					confIn := m.folderThatContainConfig[moduleName][i]
 					var comfirmPath string
 					if len(confIn) > len(confFrom) {
 						comfirmPath = strings.Replace(confIn, confFrom, "", -1)
