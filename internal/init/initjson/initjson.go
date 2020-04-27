@@ -13,7 +13,7 @@ var DefaultJSON string = `{
  
 	}, 
 	"Modules": {
-		"newsresder": {
+		"имя_модуля": {
 			"pathFrom": "путь до модуля",
 			"pathIn": "путь до папки куда будем устанавливать"
 		}
