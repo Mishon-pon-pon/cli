@@ -33,7 +33,7 @@ func (m *Module) CopyModule(from string, in string, moduleName string, moduleNam
 		path, _ := os.Getwd()
 		for i := 0; i < len(inPathsArr); i++ {
 			path += "/" + inPathsArr[i]
-			os.Mkdir(path, 0666)
+			os.Mkdir(path, 0777)
 		}
 	}
 	return filepath.Walk(from, func(path string, info os.FileInfo, err error) error {
@@ -69,7 +69,7 @@ func (m *Module) CopyModule(from string, in string, moduleName string, moduleNam
 
 		} else {
 			path = strings.Replace(path, from, in, -1)
-			os.Mkdir(path, 0666)
+			os.Mkdir(path, 0777)
 		}
 
 		return nil
