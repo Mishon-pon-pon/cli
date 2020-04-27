@@ -3,16 +3,15 @@ package modules
 import (
 	"errors"
 	"fmt"
-	"os"
-	"path/filepath"
-	"strings"
 )
 
 // FindModule ...
 func (m *Module) FindModule(moduleName string, moduleNames map[string]*Config) error {
 	if _, ok := moduleNames[moduleName]; ok {
 		if moduleNames[moduleName].PathFrom == "" {
-			found := false
+			return fmt.Errorf("Не указан путь(pathFrom) в fso_configs.json до модуля %s в node_modules", moduleName)
+			/*Код ниже нужен для рекурсивного поиска в node_modules, директории с модулем(по имени)*/
+			/*found := false
 			return filepath.Walk("node_modules/", func(path string, info os.FileInfo, err error) error {
 				if err != nil {
 					fmt.Printf("prevent panic by handling failure accessing a path %q: %v\n", path, err)
@@ -26,7 +25,7 @@ func (m *Module) FindModule(moduleName string, moduleNames map[string]*Config) e
 					}
 				}
 				return nil
-			})
+			})*/
 		}
 		return nil
 	}

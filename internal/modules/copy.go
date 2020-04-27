@@ -28,13 +28,9 @@ func copyFile(from, in string) error {
 
 // CopyModule ...
 func (m *Module) CopyModule(from string, in string, moduleName string, moduleNames map[string]*Config) error {
-	if strings.Contains(in, "/") {
-		inPathsArr := strings.Split(in, "/")
-		path, _ := os.Getwd()
-		for i := 0; i < len(inPathsArr); i++ {
-			path += "/" + inPathsArr[i]
-			os.Mkdir(path, 0777)
-		}
+	err := os.MkdirAll(in, 0777)
+	if err != nil {
+		return err
 	}
 	return filepath.Walk(from, func(path string, info os.FileInfo, err error) error {
 		path = strings.Replace(path, `\`, "/", -1)
