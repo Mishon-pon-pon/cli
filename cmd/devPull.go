@@ -64,9 +64,20 @@ func init() {
 func DevPull() {
 	ps, _ := exec.LookPath("powershell.exe")
 
-	conf := GetConfig()
+	path, err := os.Getwd()
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	cmd := exec.Command(ps, "cd", conf.Repository.DevPath, "\ngit pull")
+	conf := GetConfig()
+	err = os.Chdir(conf.Repository.DevPath)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	p, _ := os.Getwd()
+	fmt.Println("Обновляем экземпляр репозитория который находится по адресу", p)
+	cmd := exec.Command(ps, "git pull")
 
 	fmt.Println("Основной репозиторий:")
 	out, err := cmd.Output()
@@ -80,7 +91,7 @@ func DevPull() {
 	fmt.Fscan(os.Stdin, &userAccept)
 
 	if userAccept == "y" {
-		cmd = exec.Command(ps, "cd", conf.Repository.DevPath, "\ngit submodule update --init")
+		cmd = exec.Command(ps, "git submodule update --init")
 		fmt.Println("Субмодуль:")
 		out, err = cmd.Output()
 		if err != nil {
@@ -91,5 +102,14 @@ func DevPull() {
 		} else {
 			fmt.Println(string(out))
 		}
+	} else {
+
+	}
+
+	fmt.Println("\nЗавершено")
+
+	err = os.Chdir(path)
+	if err != nil {
+		log.Fatal(err)
 	}
 }
