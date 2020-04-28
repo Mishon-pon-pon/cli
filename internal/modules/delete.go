@@ -7,7 +7,7 @@ import (
 )
 
 // DeleteModule ...
-func (m *Module) DeleteModule(moduleName string, moduleNames map[string]*Config) error {
+func (m *Module) deleteModule(moduleName string, moduleNames map[string]*Config) error {
 	in := moduleNames[moduleName].PathIn
 	if in != "" {
 		removeDir := make(map[string]bool)

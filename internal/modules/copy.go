@@ -1,6 +1,7 @@
 package modules
 
 import (
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -28,7 +29,21 @@ func copyFile(from, in string) error {
 
 // CopyModule ...
 func (m *Module) CopyModule(from string, in string, moduleName string, moduleNames map[string]*Config) error {
-	err := os.MkdirAll(in, 0777)
+	err := m.findModule(moduleName, moduleNames)
+	if err != nil {
+		return err
+	}
+
+	m.updateNodeModules()
+	fmt.Println("node_modules обновлены")
+	fmt.Println("\nОбновление модуля проекта...")
+
+	err = m.deleteModule(moduleName, moduleNames)
+	if err != nil {
+		return err
+	}
+
+	err = os.MkdirAll(in, 0777)
 	if err != nil {
 		return err
 	}

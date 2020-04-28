@@ -6,7 +6,7 @@ import (
 )
 
 // FindModule ...
-func (m *Module) FindModule(moduleName string, moduleNames map[string]*Config) error {
+func (m *Module) findModule(moduleName string, moduleNames map[string]*Config) error {
 	if _, ok := moduleNames[moduleName]; ok {
 		if moduleNames[moduleName].PathFrom == "" {
 			return fmt.Errorf("Не указан путь(pathFrom) в fso_configs.json до модуля %s в node_modules", moduleName)

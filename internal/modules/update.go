@@ -8,7 +8,7 @@ import (
 )
 
 // UpdateNodeModules ...
-func (m *Module) UpdateNodeModules() {
+func (m *Module) updateNodeModules() {
 	ps, err := exec.LookPath("powershell.exe")
 	if err != nil {
 		log.Fatal(err)

@@ -34,22 +34,15 @@ var moduleUpdateCmd = &cobra.Command{
 	Берет от туда файлы и переносит их в папку которую вы добавили в fso_config в поле pathIn`,
 	Run: func(cmd *cobra.Command, args []string) {
 		m := modules.NewModule()
-		m.UpdateNodeModules()
-
-		fmt.Println("node_modules обновлены")
-		fmt.Println("\nОбновление модуля проекта...")
 
 		config := GetConfig()
-		if err := m.FindModule(moduleName, config.Modules); err == nil {
-			m.DeleteModule(moduleName, config.Modules)
-			err := m.CopyModule(config.Modules[moduleName].PathFrom, config.Modules[moduleName].PathIn, moduleName, config.Modules)
-			if err != nil {
-				log.Fatal(err)
-			}
+
+		if err := m.CopyModule(config.Modules[moduleName].PathFrom, config.Modules[moduleName].PathIn, moduleName, config.Modules); err == nil {
 			fmt.Println("\nОбновление модуля прошло успешно")
 		} else {
-			fmt.Println(err)
+			log.Fatal(err)
 		}
+
 	},
 }
 
