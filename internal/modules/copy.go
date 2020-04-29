@@ -53,15 +53,12 @@ func copyFile(from, in string) error {
 func (m *Module) copyModuleInternal(moduleName string, moduleNames map[string]*Config) error {
 	from := moduleNames[moduleName].PathFrom
 	in := moduleNames[moduleName].PathIn
-	err := os.MkdirAll(in, 0777)
-	if err != nil {
-		return err
-	}
+
 	return filepath.Walk(from, func(path string, info os.FileInfo, err error) error {
 		path = strings.Replace(path, `\`, "/", -1)
 		fromFile := path
 		inFile := strings.Replace(path, from, in, -1)
-		if !info.IsDir() {
+		if info != nil && !info.IsDir() {
 			if !strings.Contains(path, ".config") {
 				err = copyFile(fromFile, inFile)
 				if err != nil {
@@ -73,6 +70,7 @@ func (m *Module) copyModuleInternal(moduleName string, moduleNames map[string]*C
 				for i := 0; i < len(m.folderThatContainConfig[moduleName]); i++ {
 					confIn := m.folderThatContainConfig[moduleName][i]
 					var comfirmPath string
+					/* сделать ревью кода ниже */
 					if len(confIn) > len(confFrom) {
 						comfirmPath = strings.Replace(confIn, confFrom, "", -1)
 					} else {
@@ -81,6 +79,7 @@ func (m *Module) copyModuleInternal(moduleName string, moduleNames map[string]*C
 					if comfirmPath == `` || comfirmPath == `/` || comfirmPath == `\` {
 						toCopy = false
 					}
+					/****************************/
 				}
 				if toCopy {
 					copyFile(fromFile, inFile)
@@ -90,7 +89,7 @@ func (m *Module) copyModuleInternal(moduleName string, moduleNames map[string]*C
 
 		} else {
 			path = strings.Replace(path, from, in, -1)
-			os.Mkdir(path, 0777)
+			os.MkdirAll(path, 0777)
 		}
 
 		return nil
