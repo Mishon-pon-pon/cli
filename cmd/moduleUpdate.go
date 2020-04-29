@@ -37,7 +37,7 @@ var moduleUpdateCmd = &cobra.Command{
 
 		config := GetConfig()
 
-		if err := m.CopyModule(config.Modules[moduleName].PathFrom, config.Modules[moduleName].PathIn, moduleName, config.Modules); err == nil {
+		if err := m.CopyModule(moduleName, config.Modules); err == nil {
 			fmt.Println("\nОбновление модуля прошло успешно")
 		} else {
 			log.Fatal(err)

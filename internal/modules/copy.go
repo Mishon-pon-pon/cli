@@ -28,8 +28,8 @@ func copyFile(from, in string) error {
 }
 
 // CopyModule ...
-func (m *Module) CopyModule(from string, in string, moduleName string, moduleNames map[string]*Config) error {
-	err := m.findModule(moduleName, moduleNames)
+func (m *Module) CopyModule(moduleName string, moduleNames map[string]*Config) error {
+	in, from, err := m.findModule(moduleName, moduleNames)
 	if err != nil {
 		return err
 	}
@@ -43,14 +43,14 @@ func (m *Module) CopyModule(from string, in string, moduleName string, moduleNam
 		return err
 	}
 
-	err = os.MkdirAll(in, 0777)
+	err = os.MkdirAll(*in, 0777)
 	if err != nil {
 		return err
 	}
-	return filepath.Walk(from, func(path string, info os.FileInfo, err error) error {
+	return filepath.Walk(*from, func(path string, info os.FileInfo, err error) error {
 		path = strings.Replace(path, `\`, "/", -1)
 		fromFile := path
-		inFile := strings.Replace(path, from, in, -1)
+		inFile := strings.Replace(path, *from, *in, -1)
 		if !info.IsDir() {
 			if !strings.Contains(path, ".config") {
 				err = copyFile(fromFile, inFile)
@@ -59,7 +59,7 @@ func (m *Module) CopyModule(from string, in string, moduleName string, moduleNam
 				}
 			} else {
 				toCopy := true
-				confFrom := strings.Replace(path, from, "", -1)
+				confFrom := strings.Replace(path, *from, "", -1)
 				for i := 0; i < len(m.folderThatContainConfig[moduleName]); i++ {
 					confIn := m.folderThatContainConfig[moduleName][i]
 					var comfirmPath string
@@ -79,7 +79,7 @@ func (m *Module) CopyModule(from string, in string, moduleName string, moduleNam
 			}
 
 		} else {
-			path = strings.Replace(path, from, in, -1)
+			path = strings.Replace(path, *from, *in, -1)
 			os.Mkdir(path, 0777)
 		}
 
