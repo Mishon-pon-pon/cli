@@ -8,6 +8,29 @@ import (
 	"strings"
 )
 
+// CopyModule ...
+func (m *Module) CopyModule(moduleName string, moduleNames map[string]*Config) error {
+	_, _, err := m.findModule(moduleName, moduleNames)
+	if err != nil {
+		return err
+	}
+
+	m.updateNodeModules()
+	fmt.Println("node_modules обновлены")
+	fmt.Println("\nОбновление модуля проекта...")
+
+	err = m.deleteModule(moduleName, moduleNames)
+	if err != nil {
+		return err
+	}
+
+	if err = m.copyModuleInternal(moduleName, moduleNames); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func copyFile(from, in string) error {
 	fileFrom, err := os.Open(from)
 	defer fileFrom.Close()
@@ -27,30 +50,17 @@ func copyFile(from, in string) error {
 	return nil
 }
 
-// CopyModule ...
-func (m *Module) CopyModule(moduleName string, moduleNames map[string]*Config) error {
-	in, from, err := m.findModule(moduleName, moduleNames)
+func (m *Module) copyModuleInternal(moduleName string, moduleNames map[string]*Config) error {
+	from := moduleNames[moduleName].PathFrom
+	in := moduleNames[moduleName].PathIn
+	err := os.MkdirAll(in, 0777)
 	if err != nil {
 		return err
 	}
-
-	m.updateNodeModules()
-	fmt.Println("node_modules обновлены")
-	fmt.Println("\nОбновление модуля проекта...")
-
-	err = m.deleteModule(moduleName, moduleNames)
-	if err != nil {
-		return err
-	}
-
-	err = os.MkdirAll(*in, 0777)
-	if err != nil {
-		return err
-	}
-	return filepath.Walk(*from, func(path string, info os.FileInfo, err error) error {
+	return filepath.Walk(from, func(path string, info os.FileInfo, err error) error {
 		path = strings.Replace(path, `\`, "/", -1)
 		fromFile := path
-		inFile := strings.Replace(path, *from, *in, -1)
+		inFile := strings.Replace(path, from, in, -1)
 		if !info.IsDir() {
 			if !strings.Contains(path, ".config") {
 				err = copyFile(fromFile, inFile)
@@ -59,7 +69,7 @@ func (m *Module) CopyModule(moduleName string, moduleNames map[string]*Config) e
 				}
 			} else {
 				toCopy := true
-				confFrom := strings.Replace(path, *from, "", -1)
+				confFrom := strings.Replace(path, from, "", -1)
 				for i := 0; i < len(m.folderThatContainConfig[moduleName]); i++ {
 					confIn := m.folderThatContainConfig[moduleName][i]
 					var comfirmPath string
@@ -79,7 +89,7 @@ func (m *Module) CopyModule(moduleName string, moduleNames map[string]*Config) e
 			}
 
 		} else {
-			path = strings.Replace(path, *from, *in, -1)
+			path = strings.Replace(path, from, in, -1)
 			os.Mkdir(path, 0777)
 		}
 

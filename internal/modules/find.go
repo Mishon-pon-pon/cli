@@ -1,11 +1,12 @@
 package modules
 
 import (
+	"errors"
 	"fmt"
 )
 
 // FindModule ...
-func (m *Module) findModule(moduleName string, moduleNames map[string]*Config) (in *string, from *string, err error) {
+func (m *Module) findModule(moduleName string, moduleNames map[string]*Config) (from *string, in *string, err error) {
 	if _, ok := moduleNames[moduleName]; ok {
 		if moduleNames[moduleName].PathFrom == "" {
 			err = fmt.Errorf("Не указан путь(pathFrom) в fso_configs.json до модуля %s в node_modules", moduleName)
@@ -26,10 +27,18 @@ func (m *Module) findModule(moduleName string, moduleNames map[string]*Config) (
 				}
 				return nil
 			})*/
-		} else if moduleNames[moduleName].PathIn == "" {
-			err = fmt.Errorf("Не указан путь(pathFrom) в fso_configs.json до модуля %s в node_modules\n%s", moduleName, err.Error())
 		}
-		return &moduleNames[moduleName].PathIn, &moduleNames[moduleName].PathFrom, nil
+
+		if moduleNames[moduleName].PathIn == "" {
+			if err == nil {
+				err = errors.New("")
+			}
+			err = fmt.Errorf("\nНе указан путь(pathIn) в fso_configs.json до модуля %s в папке проекта\n%s", moduleName, err.Error())
+		}
+		if err != nil {
+			return nil, nil, err
+		}
+		return &moduleNames[moduleName].PathFrom, &moduleNames[moduleName].PathIn, nil
 	}
 	return nil, nil, fmt.Errorf("\nНет такого модуля, либо он не указан в fso_config.json")
 }
