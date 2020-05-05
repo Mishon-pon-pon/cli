@@ -30,9 +30,13 @@ var moduleNameFlag string
 var moduleUpdateCmd = &cobra.Command{
 	Use:   "module-update",
 	Short: "Обновляет модуль проекта. Флаг -m обязателен",
-	Long: `Вы вводите команду fso module-update -m имя_модуля.
-	cli обновляет npm пакет, затем идет в этот пакет по имя_модуля.
-	Берет от туда файлы и переносит их в папку которую вы добавили в fso_config в поле pathIn`,
+	Long: `
+	fso module-update -m имя_модуля/all
+
+	Вы вводите команду fso module-update -m имя_модуля.
+	cli обновляет npm пакеты(указанные в package.json), затем идет в node_modules по имя_модуля.
+	Берет от туда файлы и переносит их в папку которую вы добавили в fso_config.json в поле pathIn.
+	Если указать после флага -m значение all, то обновятся все модули указанные в fso_config.json`,
 	Run: func(cmd *cobra.Command, args []string) {
 		npmrepo.UpdateNodeModules()
 
@@ -65,7 +69,7 @@ var moduleUpdateCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(moduleUpdateCmd)
 
-	moduleUpdateCmd.Flags().StringVarP(&moduleNameFlag, "module-name", "m", "", "module name")
+	moduleUpdateCmd.Flags().StringVarP(&moduleNameFlag, "module-name", "m", "", "Имя обновляемого модуля, или all, если нужно обновить все модули")
 	moduleUpdateCmd.MarkFlagRequired("module-name")
 	// Here you will define your flags and configuration settings.
 

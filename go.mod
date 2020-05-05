@@ -3,6 +3,7 @@ module fso
 go 1.13
 
 require (
+	github.com/common-nighthawk/go-figure v0.0.0-20190529165535-67e0ed34491a
 	github.com/denisenkom/go-mssqldb v0.0.0-20200206145737-bbfc9a55622e
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
 	github.com/mitchellh/go-homedir v1.1.0

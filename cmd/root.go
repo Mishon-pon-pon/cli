@@ -24,6 +24,7 @@ import (
 	"fso/internal/version"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/spf13/cobra"
 
@@ -57,11 +58,11 @@ var cfgFile string
 var rootCmd = &cobra.Command{
 	Use:   "fso",
 	Short: "CLI для разработки проектов FSO",
-	Long: version.Version + `
+	Long: version.GetVersion("banner3-D") + `
 
 	CLI для разработки проектов FSO.
 	
-	  -=*created by MNekrasov*=-
+	  -=*creatED BY MNekrasov*=-
 	`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
@@ -90,16 +91,19 @@ func init() {
 	// if cfgFile == "" {
 	// 	cfgFile = "fso_config.json"
 	// }
-	configs := GetConfig()
-	file, err := os.Open("fso_config.json")
-	if err != nil {
-		fmt.Println("fso не проинициализированно. Выполните fso init")
-	} else {
-		jsonConf := json.NewDecoder(file)
-		err = jsonConf.Decode(configs)
+	if !strings.Contains(strings.Join(os.Args, " "), "init") {
+		configs := GetConfig()
+		file, err := os.Open("fso_config.json")
 		if err != nil {
-			log.Fatal(err)
+			fmt.Println("fso не проинициализированно. Выполните fso init")
+		} else {
+			jsonConf := json.NewDecoder(file)
+			err = jsonConf.Decode(configs)
+			if err != nil {
+				log.Fatal(err)
+			}
 		}
+		defer file.Close()
 	}
 
 	// Cobra also supports local flags, which will only run

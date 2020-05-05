@@ -1,19 +1,19 @@
 package version
 
-var Version = `
-    ___________ ____ 
-   / ____/ ___// __ \
-  / /_   \__ \/ / / /
- / __/  ___/ / /_/ / 
-/_/    /____/\____/ 
-    ____  _______    __________    ____  ____  __________  _____
-   / __ \/ ____/ |  / / ____/ /   / __ \/ __ \/ ____/ __ \/ ___/
-  / / / / __/  | | / / __/ / /   / / / / /_/ / __/ / /_/ /\__ \ 
- / /_/ / /___  | |/ / /___/ /___/ /_/ / ____/ /___/ _, _/___/ / 
-/_____/_____/  |___/_____/_____/\____/_/   /_____/_/ |_|/____/  
-        ____   ____   ___ 
- _   __/ __ \ / __ \ |__ \
-| | / / / / // / / / __/ /
-| |/ / /_/ // /_/ / / __/ 
-|___/\____(_)____(_)____/ 
-`
+import "github.com/common-nighthawk/go-figure"
+
+// Version ...
+var Row1 = "FSO_CLI"
+
+// var Row2 = "developers"
+var Row3 = "v0.0.2"
+
+func GetVersion(font string) string {
+	str := "\n" + figure.NewFigure(Row1, font, false).String()
+
+	// str += figure.NewFigure(Row2, font, false).String()
+
+	str += figure.NewFigure(Row3, font, false).String()
+	str += "\n" + Row3
+	return str
+}

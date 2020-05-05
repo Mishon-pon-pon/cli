@@ -28,10 +28,7 @@ var versionCmd = &cobra.Command{
 	Short: "Версию показывает и картинку",
 	Long:  `будет описание, но поже`,
 	Run: func(cmd *cobra.Command, args []string) {
-
-		fmt.Println(version.Version)
-
-		fmt.Println("v.0.0.1")
+		fmt.Println(version.GetVersion("banner3-D"))
 	},
 }
 

@@ -21,7 +21,6 @@ import (
 	"fso/internal/version"
 	"log"
 	"os"
-	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -56,7 +55,7 @@ func init() {
 
 func initConfiguration() {
 	if _, err := os.Stat("fso_config.json"); os.IsNotExist(err) {
-		fmt.Println(version.Version)
+		fmt.Println(version.GetVersion("banner3-D"))
 		file, err := os.Create("fso_config.json")
 		if err != nil {
 			log.Fatal(err)
@@ -64,21 +63,23 @@ func initConfiguration() {
 		defer file.Close()
 
 		file.WriteString(initjson.DefaultJSON)
+
+		fmt.Println("\nИнициализация прошла успешно! \nСоздан файл fso_config.json. \nЕго необходимо настроить.")
 	} else {
-		conf := GetConfig()
-		newJSON := strings.Replace(initjson.DefaultJSON, "server=IP_сервера;user id=Имя_Пользователя;password=Пароль;database=База_Данных", conf.DataBase.DataBaseURL, -1)
-		newJSON = strings.Replace(newJSON, "mssql", conf.DataBase.DBManager, -1)
-		newJSON = strings.Replace(newJSON, "полный путь до удаленного репозитория", conf.Repository.RemotePath, -1)
-		newJSON = strings.Replace(newJSON, "полный путь до dev репозитория", conf.Repository.DevPath, -1)
-		newJSON = strings.Replace(newJSON, "полный путь до test репозитория", conf.Repository.TestPath, -1)
+		// conf := GetConfig()
+		// newJSON := strings.Replace(initjson.DefaultJSON, "server=IP_сервера;user id=Имя_Пользователя;password=Пароль;database=База_Данных", conf.DataBase.DataBaseURL, -1)
+		// newJSON = strings.Replace(newJSON, "mssql", conf.DataBase.DBManager, -1)
+		// newJSON = strings.Replace(newJSON, "полный путь до удаленного репозитория", conf.Repository.RemotePath, -1)
+		// newJSON = strings.Replace(newJSON, "полный путь до dev репозитория", conf.Repository.DevPath, -1)
+		// newJSON = strings.Replace(newJSON, "полный путь до test репозитория", conf.Repository.TestPath, -1)
 
-		file, err := os.Create("fso_config.json")
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer file.Close()
+		// file, err := os.Create("fso_config.json")
+		// if err != nil {
+		// 	log.Fatal(err)
+		// }
+		// defer file.Close()
 
-		file.WriteString(newJSON)
+		// file.WriteString(newJSON)
 		fmt.Println("\nВ этой папке уже была инициализация. Смотрите файл fso_config.json")
 	}
 

@@ -30,13 +30,13 @@ var devPullCmd = &cobra.Command{
 	Short: "Эта команда делает пулл на дев стенде",
 	Long: `
 	Для того чтобы команда сделала pull на дев стенде нужно, 
-	чтобы в файле fso_config.json в поле dev_repository.path
+	чтобы в файле fso_config.json в поле Repository.devPath
 	был прописан путь до папки с гитом на дев стенде. 
-	Так как это json и так как это сетевой путь 
+	Так как это json и так как это сетевой путь windows
 	то нужно экранировать симовлы. Например:
 
-	"dev_repository": {
-		"path": "\\\\10.1.12.87\\c$\\Foresight\\mtk17"
+	"Repository": {
+		"devPath": "\\\\10.1.12.87\\c$\\Foresight\\mtk17"
 	}
 
 `,
