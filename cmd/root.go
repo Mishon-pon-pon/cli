@@ -56,13 +56,12 @@ var cfgFile string
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "fso",
-	Short: "CLI для FSO прогеров",
+	Short: "CLI для разработки проектов FSO",
 	Long: version.Version + `
 
-	CLI для FSO прогеров.
-
-	Эта потрясающая программа пока не делает ничего, но что бУдет делать!
+	CLI для разработки проектов FSO.
 	
+	  -=*created by MNekrasov*=-
 	`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:

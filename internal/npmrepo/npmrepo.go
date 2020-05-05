@@ -1,4 +1,4 @@
-package modules
+package npmrepo
 
 import (
 	"fmt"
@@ -8,7 +8,7 @@ import (
 )
 
 // UpdateNodeModules ...
-func (m *Module) updateNodeModules() {
+func UpdateNodeModules() {
 	ps, err := exec.LookPath("powershell.exe")
 	if err != nil {
 		log.Fatal(err)
@@ -19,6 +19,7 @@ func (m *Module) updateNodeModules() {
 	c.Stderr = os.Stderr
 
 	c.Run()
+	fmt.Println("node_modules обновлены\n")
 	// o, err := c.Output()
 	// if err != nil {
 	// 	log.Fatal(err)

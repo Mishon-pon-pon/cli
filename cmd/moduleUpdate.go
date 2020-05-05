@@ -18,12 +18,13 @@ package cmd
 import (
 	"fmt"
 	"fso/internal/modules"
+	"fso/internal/npmrepo"
 	"log"
 
 	"github.com/spf13/cobra"
 )
 
-var moduleName string
+var moduleNameFlag string
 
 // moduleUpdateCmd represents the moduleUpdate command
 var moduleUpdateCmd = &cobra.Command{
@@ -33,14 +34,29 @@ var moduleUpdateCmd = &cobra.Command{
 	cli обновляет npm пакет, затем идет в этот пакет по имя_модуля.
 	Берет от туда файлы и переносит их в папку которую вы добавили в fso_config в поле pathIn`,
 	Run: func(cmd *cobra.Command, args []string) {
+		npmrepo.UpdateNodeModules()
+
 		m := modules.NewModule()
 
 		config := GetConfig()
 
-		if err := m.CopyModule(moduleName, config.Modules); err == nil {
-			fmt.Println("\nОбновление модуля прошло успешно")
+		if moduleNameFlag == "all" {
+			for moduleName := range config.Modules {
+				fmt.Println(moduleName)
+				if err := m.CopyModule(moduleName, config.Modules); err == nil {
+					fmt.Println("Обновление модуля прошло успешно")
+					fmt.Println()
+				} else {
+					log.Fatal(err)
+				}
+			}
 		} else {
-			log.Fatal(err)
+			fmt.Println(moduleNameFlag)
+			if err := m.CopyModule(moduleNameFlag, config.Modules); err == nil {
+				fmt.Println("Обновление модуля прошло успешно")
+			} else {
+				log.Fatal(err)
+			}
 		}
 
 	},
@@ -49,7 +65,7 @@ var moduleUpdateCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(moduleUpdateCmd)
 
-	moduleUpdateCmd.Flags().StringVarP(&moduleName, "module-name", "m", "", "module name")
+	moduleUpdateCmd.Flags().StringVarP(&moduleNameFlag, "module-name", "m", "", "module name")
 	moduleUpdateCmd.MarkFlagRequired("module-name")
 	// Here you will define your flags and configuration settings.
 

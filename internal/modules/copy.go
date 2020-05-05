@@ -15,9 +15,7 @@ func (m *Module) CopyModule(moduleName string, moduleNames map[string]*Config) e
 		return err
 	}
 
-	m.updateNodeModules()
-	fmt.Println("node_modules обновлены")
-	fmt.Println("\nОбновление модуля проекта...")
+	fmt.Println("Обновление модуля проекта...")
 
 	err = m.deleteModule(moduleName, moduleNames)
 	if err != nil {
