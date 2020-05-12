@@ -17,17 +17,17 @@ package cmd
 
 import (
 	"fmt"
-	"fso/internal/modules"
 	"fso/internal/npmrepo"
+	"fso/internal/updater"
 	"log"
 
 	"github.com/spf13/cobra"
 )
 
-var moduleNameFlag string
+var serviceNameFlag string
 
 // moduleUpdateCmd represents the moduleUpdate command
-var moduleUpdateCmd = &cobra.Command{
+var serviceUpdateCmd = &cobra.Command{
 	Use:   "s-update",
 	Short: "Обновляет модуль проекта. Флаг -n обязателен",
 	Long: `
@@ -40,14 +40,14 @@ var moduleUpdateCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		npmrepo.UpdateNodeModules()
 
-		m := modules.NewModule()
-
 		config := GetConfig()
 
-		if moduleNameFlag == "all" {
+		u := updater.NewUpdater("Service")
+
+		if serviceNameFlag == "all" {
 			for moduleName := range config.Services {
 				fmt.Println(moduleName)
-				if err := m.CopyModule(moduleName, config.Services); err == nil {
+				if err := u.Copy(moduleName, config.Services[moduleName].PathFrom, config.Services[moduleName].PathIn); err == nil {
 					fmt.Println("Обновление модуля прошло успешно")
 					fmt.Println()
 				} else {
@@ -55,8 +55,8 @@ var moduleUpdateCmd = &cobra.Command{
 				}
 			}
 		} else {
-			fmt.Println(moduleNameFlag)
-			if err := m.CopyModule(moduleNameFlag, config.Services); err == nil {
+			fmt.Println(serviceNameFlag)
+			if err := u.Copy(serviceNameFlag, config.Services[serviceNameFlag].PathFrom, config.Services[serviceNameFlag].PathIn); err == nil {
 				fmt.Println("Обновление модуля прошло успешно")
 			} else {
 				log.Fatal(err)
@@ -67,10 +67,10 @@ var moduleUpdateCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(moduleUpdateCmd)
+	rootCmd.AddCommand(serviceUpdateCmd)
 
-	moduleUpdateCmd.Flags().StringVarP(&moduleNameFlag, "name", "n", "", "Имя обновляемого сервиса, или all, если нужно обновить все модули")
-	moduleUpdateCmd.MarkFlagRequired("module-name")
+	serviceUpdateCmd.Flags().StringVarP(&serviceNameFlag, "service-name", "s", "all", "Имя обновляемого сервиса, или all, если нужно обновить все модули")
+	serviceUpdateCmd.MarkFlagRequired("service-name")
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command

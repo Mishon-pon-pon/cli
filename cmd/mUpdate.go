@@ -17,9 +17,14 @@ package cmd
 
 import (
 	"fmt"
+	"fso/internal/npmrepo"
+	"fso/internal/updater"
+	"log"
 
 	"github.com/spf13/cobra"
 )
+
+var moduleNameFlag string
 
 // mUpdateCmd represents the mUpdate command
 var mUpdateCmd = &cobra.Command{
@@ -32,13 +37,38 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("mUpdate called")
+		npmrepo.UpdateNodeModules()
+
+		config := GetConfig()
+
+		u := updater.NewUpdater("Module")
+
+		if moduleNameFlag == "all" {
+			for moduleName := range config.Modules {
+				fmt.Println(moduleName)
+				if err := u.Copy(moduleName, config.Modules[moduleName].PathFrom, config.Modules[moduleName].PathIn); err == nil {
+					fmt.Println("Обновление модуля прошло успешно")
+					fmt.Println()
+				} else {
+					log.Fatal(err)
+				}
+			}
+		} else {
+			fmt.Println(moduleNameFlag)
+			if err := u.Copy(moduleNameFlag, config.Modules[moduleNameFlag].PathFrom, config.Modules[moduleNameFlag].PathIn); err == nil {
+				fmt.Println("Обновление модуля прошло успешно")
+			} else {
+				log.Fatal(err)
+			}
+		}
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(mUpdateCmd)
 
+	mUpdateCmd.Flags().StringVarP(&moduleNameFlag, "module-name", "m", "", "Имя обновляемого модуля, или all, если нужно обновить все модули")
+	mUpdateCmd.MarkFlagRequired("module-name")
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command

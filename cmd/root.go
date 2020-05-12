@@ -19,8 +19,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"fso/internal/db"
-	"fso/internal/modules"
 	"fso/internal/repo"
+	"fso/internal/updater"
 	"fso/internal/version"
 	"log"
 	"os"
@@ -37,7 +37,8 @@ var config *Config
 type Config struct {
 	DataBase   *db.Config
 	Repository *repo.Config
-	Services   map[string]*modules.Config
+	Services   map[string]*updater.Config
+	Modules    map[string]*updater.Config
 }
 
 // GetConfig ...
