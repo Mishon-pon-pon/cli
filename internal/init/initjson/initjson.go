@@ -12,9 +12,15 @@ var DefaultJSON string = `{
 		"testPath": "полный путь до test репозитория"
  
 	}, 
+	"Services": {
+		"имя_модуля": {
+			"pathFrom": "путь до модуля в node_modules",
+			"pathIn": "путь до папки куда будем устанавливать"
+		}
+	},
 	"Modules": {
 		"имя_модуля": {
-			"pathFrom": "путь до модуля",
+			"pathFrom": "путь до модуля в node_modules",
 			"pathIn": "путь до папки куда будем устанавливать"
 		}
 	}

@@ -37,7 +37,7 @@ var config *Config
 type Config struct {
 	DataBase   *db.Config
 	Repository *repo.Config
-	Modules    map[string]*modules.Config
+	Services   map[string]*modules.Config
 }
 
 // GetConfig ...
