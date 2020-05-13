@@ -8,21 +8,12 @@ import (
 	"strings"
 )
 
-// Copy ...
-func (m *Module) Copy(serviceName, from, in string) error {
-	// _, _, err := m.findModule(serviceName, serviceNames)
-	// if err != nil {
-	// 	return err
-	// }
+// Update ...
+func (m *Module) Update(serviceName, from, in string) error {
 
 	fmt.Println("Обновление модуля проекта...")
 
-	// err := m.deleteService(serviceName, from, in)
-	// if err != nil {
-	// 	return err
-	// }
-
-	if err := m.copyServiceInternal(serviceName, from, in); err != nil {
+	if err := m.copyModuleInternal(serviceName, from, in); err != nil {
 		return err
 	}
 
@@ -48,7 +39,7 @@ func copyFile(from, in string) error {
 	return nil
 }
 
-func (m *Module) copyServiceInternal(serviceName, from, in string) error {
+func (m *Module) copyModuleInternal(serviceName, from, in string) error {
 
 	return filepath.Walk(from, func(path string, info os.FileInfo, err error) error {
 		path = strings.Replace(path, `\`, "/", -1)

@@ -1,9 +1,9 @@
 /*
-Copyright © 2020 NAME HERE <EMAIL ADDRESS>
+Updateright © 2020 NAME HERE <EMAIL ADDRESS>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+You may obtain a Update of the License at
 
     http://www.apache.org/licenses/LICENSE-2.0
 
@@ -28,14 +28,20 @@ var moduleNameFlag string
 
 // mUpdateCmd represents the mUpdate command
 var mUpdateCmd = &cobra.Command{
-	Use:   "mUpdate",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+	Use:   "m-update",
+	Short: "обновляет модуль проекта. Флаг -m обязателен.",
+	Long: `
+	fso m-update -m имя_модуля/all
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Вы вводите команду fso m-update -m имя_модуля.
+	cli обновляет npm пакеты(указанные в package.json), затем идет в node_modules по имя_модуля.
+	Берет от туда файлы и переносит их в папку которую вы добавили в fso_config.json в поле pathIn.
+	Если указать после флага -m значение all, то обновятся все модули указанные в fso_config.json
+	
+	При обновлении модуля, программа мёрджит содержимое папки указанной в pathIn модуля. Если файл
+	уже существовал программа обновит его содержимое, если файла небыло, то добавит. Если файл есть
+	локально, но его нет в pathFrom то программа ничего с ним не сделает.
+	`,
 	Run: func(cmd *cobra.Command, args []string) {
 		npmrepo.UpdateNodeModules()
 
@@ -46,7 +52,7 @@ to quickly create a Cobra application.`,
 		if moduleNameFlag == "all" {
 			for moduleName := range config.Modules {
 				fmt.Println(moduleName)
-				if err := u.Copy(moduleName, config.Modules[moduleName].PathFrom, config.Modules[moduleName].PathIn); err == nil {
+				if err := u.Update(moduleName, config.Modules[moduleName].PathFrom, config.Modules[moduleName].PathIn); err == nil {
 					fmt.Println("Обновление модуля прошло успешно")
 					fmt.Println()
 				} else {
@@ -55,7 +61,7 @@ to quickly create a Cobra application.`,
 			}
 		} else {
 			fmt.Println(moduleNameFlag)
-			if err := u.Copy(moduleNameFlag, config.Modules[moduleNameFlag].PathFrom, config.Modules[moduleNameFlag].PathIn); err == nil {
+			if err := u.Update(moduleNameFlag, config.Modules[moduleNameFlag].PathFrom, config.Modules[moduleNameFlag].PathIn); err == nil {
 				fmt.Println("Обновление модуля прошло успешно")
 			} else {
 				log.Fatal(err)

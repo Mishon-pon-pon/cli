@@ -6,7 +6,7 @@ import "github.com/common-nighthawk/go-figure"
 var Row1 = "FSO_CLI"
 
 // var Row2 = "developers"
-var Row3 = "v0.0.2"
+var Row3 = "v0.0.3"
 
 func GetVersion(font string) string {
 	str := "\n" + figure.NewFigure(Row1, font, false).String()

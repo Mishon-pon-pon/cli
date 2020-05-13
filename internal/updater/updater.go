@@ -5,17 +5,20 @@ import (
 	"fso/internal/fsoservice"
 )
 
+// Config ...
 type Config struct {
 	PathFrom string `json:"pathFrom"`
 	PathIn   string `jsoon:"pathIn"`
 }
 
-type ICopy interface {
-	Copy(string, string, string) error
+// IUpdate - interface for cocrete implementation update
+type IUpdate interface {
+	Update(string, string, string) error
 }
 
-func NewUpdater(updaterTargetName string) ICopy {
-	var c ICopy
+// NewUpdater - constructor for Updater type
+func NewUpdater(updaterTargetName string) IUpdate {
+	var c IUpdate
 	switch updaterTargetName {
 	case "Service":
 		c = fsoservice.NewService()

@@ -1,12 +1,6 @@
 package fsoservice
 
-// Config ...
-type Config struct {
-	PathFrom string `json:"pathFrom"`
-	PathIn   string `jsoon:"pathIn"`
-}
-
-// Module ...
+// Service ...
 type Service struct {
 	/* folderThatContainConfig нужен для того чтобы
 	 * при удалении папок знать в какийх папках

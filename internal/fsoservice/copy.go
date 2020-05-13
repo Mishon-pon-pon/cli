@@ -8,14 +8,14 @@ import (
 	"strings"
 )
 
-// Copy ...
-func (m *Service) Copy(serviceName, from, in string) error {
+// Update ...
+func (m *Service) Update(serviceName, from, in string) error {
 	// _, _, err := m.findModule(serviceName, serviceNames)
 	// if err != nil {
 	// 	return err
 	// }
 
-	fmt.Println("Обновление модуля проекта...")
+	fmt.Println("Обновление сервиса проекта...")
 
 	err := m.deleteService(serviceName, from, in)
 	if err != nil {

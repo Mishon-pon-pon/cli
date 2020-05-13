@@ -1,9 +1,8 @@
-/*
-Copyright © 2020 NAME HERE <EMAIL ADDRESS>
+/*.Updateright © 2020 NAME HERE <EMAIL ADDRESS>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+You may obtain a.Update of the License at
 
     http://www.apache.org/licenses/LICENSE-2.0
 
@@ -29,14 +28,18 @@ var serviceNameFlag string
 // moduleUpdateCmd represents the moduleUpdate command
 var serviceUpdateCmd = &cobra.Command{
 	Use:   "s-update",
-	Short: "Обновляет модуль проекта. Флаг -n обязателен",
+	Short: "Обновляет сервис проекта. Флаг -s обязателен.",
 	Long: `
-	fso module-update -m имя_модуля/all
+	fso s-update -s имя_сервиса/all
 
-	Вы вводите команду fso module-update -m имя_модуля.
-	cli обновляет npm пакеты(указанные в package.json), затем идет в node_modules по имя_модуля.
+	Вы вводите команду fso s-update -s имя_сервиса.
+	cli обновляет npm пакеты(указанные в package.json), затем идет в node_modules по имя_сервиса.
 	Берет от туда файлы и переносит их в папку которую вы добавили в fso_config.json в поле pathIn.
-	Если указать после флага -m значение all, то обновятся все модули указанные в fso_config.json`,
+	Если указать после флага -s значение all, то обновятся все модули указанные в fso_config.json
+	
+	При обновлении сервиса, программа зачищает папку которую вы указали в pathIn. Удаляется всё, кроме
+	файлов с расширением .config
+	`,
 	Run: func(cmd *cobra.Command, args []string) {
 		npmrepo.UpdateNodeModules()
 
@@ -47,8 +50,8 @@ var serviceUpdateCmd = &cobra.Command{
 		if serviceNameFlag == "all" {
 			for moduleName := range config.Services {
 				fmt.Println(moduleName)
-				if err := u.Copy(moduleName, config.Services[moduleName].PathFrom, config.Services[moduleName].PathIn); err == nil {
-					fmt.Println("Обновление модуля прошло успешно")
+				if err := u.Update(moduleName, config.Services[moduleName].PathFrom, config.Services[moduleName].PathIn); err == nil {
+					fmt.Println("Обновление сервиса прошло успешно")
 					fmt.Println()
 				} else {
 					log.Fatal(err)
@@ -56,8 +59,8 @@ var serviceUpdateCmd = &cobra.Command{
 			}
 		} else {
 			fmt.Println(serviceNameFlag)
-			if err := u.Copy(serviceNameFlag, config.Services[serviceNameFlag].PathFrom, config.Services[serviceNameFlag].PathIn); err == nil {
-				fmt.Println("Обновление модуля прошло успешно")
+			if err := u.Update(serviceNameFlag, config.Services[serviceNameFlag].PathFrom, config.Services[serviceNameFlag].PathIn); err == nil {
+				fmt.Println("Обновление сервиса прошло успешно")
 			} else {
 				log.Fatal(err)
 			}
@@ -69,7 +72,7 @@ var serviceUpdateCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(serviceUpdateCmd)
 
-	serviceUpdateCmd.Flags().StringVarP(&serviceNameFlag, "service-name", "s", "all", "Имя обновляемого сервиса, или all, если нужно обновить все модули")
+	serviceUpdateCmd.Flags().StringVarP(&serviceNameFlag, "service-name", "s", "", "Имя обновляемого сервиса, или all, если нужно обновить все сервисы")
 	serviceUpdateCmd.MarkFlagRequired("service-name")
 	// Here you will define your flags and configuration settings.
 
