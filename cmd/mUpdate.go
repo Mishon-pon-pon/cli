@@ -20,7 +20,9 @@ import (
 	"fso/internal/npmrepo"
 	"fso/internal/updater"
 	"log"
+	"time"
 
+	"github.com/briandowns/spinner"
 	"github.com/spf13/cobra"
 )
 
@@ -54,7 +56,11 @@ var mUpdateCmd = &cobra.Command{
 				fmt.Println(moduleName)
 				_, ok := config.Modules[moduleName]
 				if ok {
+					s := spinner.New(spinner.CharSets[43], 100*time.Millisecond)
+					s.Color("green")
+					s.Start()
 					if err := u.Update(moduleName, config.Modules[moduleName].PathFrom, config.Modules[moduleName].PathIn); err == nil {
+						s.Stop()
 						fmt.Println("Обновление модуля прошло успешно")
 						fmt.Println()
 					} else {

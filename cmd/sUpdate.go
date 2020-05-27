@@ -19,7 +19,9 @@ import (
 	"fso/internal/npmrepo"
 	"fso/internal/updater"
 	"log"
+	"time"
 
+	"github.com/briandowns/spinner"
 	"github.com/spf13/cobra"
 )
 
@@ -61,7 +63,10 @@ var serviceUpdateCmd = &cobra.Command{
 			fmt.Println(serviceNameFlag)
 			_, ok := config.Services[serviceNameFlag]
 			if ok {
+				s := spinner.New(spinner.CharSets[43], 100*time.Millisecond)
+				s.Start()
 				if err := u.Update(serviceNameFlag, config.Services[serviceNameFlag].PathFrom, config.Services[serviceNameFlag].PathIn); err == nil {
+					s.Stop()
 					fmt.Println("Обновление сервиса прошло успешно")
 				} else {
 					log.Fatal(err)
