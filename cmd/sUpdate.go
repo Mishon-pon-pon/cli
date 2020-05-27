@@ -59,10 +59,16 @@ var serviceUpdateCmd = &cobra.Command{
 			}
 		} else {
 			fmt.Println(serviceNameFlag)
-			if err := u.Update(serviceNameFlag, config.Services[serviceNameFlag].PathFrom, config.Services[serviceNameFlag].PathIn); err == nil {
-				fmt.Println("Обновление сервиса прошло успешно")
+			_, ok := config.Services[serviceNameFlag]
+			if ok {
+				if err := u.Update(serviceNameFlag, config.Services[serviceNameFlag].PathFrom, config.Services[serviceNameFlag].PathIn); err == nil {
+					fmt.Println("Обновление сервиса прошло успешно")
+				} else {
+					log.Fatal(err)
+				}
+
 			} else {
-				log.Fatal(err)
+				fmt.Print("нет такого сервиса")
 			}
 		}
 

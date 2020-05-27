@@ -52,12 +52,18 @@ var mUpdateCmd = &cobra.Command{
 		if moduleNameFlag == "all" {
 			for moduleName := range config.Modules {
 				fmt.Println(moduleName)
-				if err := u.Update(moduleName, config.Modules[moduleName].PathFrom, config.Modules[moduleName].PathIn); err == nil {
-					fmt.Println("Обновление модуля прошло успешно")
-					fmt.Println()
+				_, ok := config.Modules[moduleName]
+				if ok {
+					if err := u.Update(moduleName, config.Modules[moduleName].PathFrom, config.Modules[moduleName].PathIn); err == nil {
+						fmt.Println("Обновление модуля прошло успешно")
+						fmt.Println()
+					} else {
+						log.Fatal(err)
+					}
 				} else {
-					log.Fatal(err)
+					fmt.Print("нет такого модуля")
 				}
+
 			}
 		} else {
 			fmt.Println(moduleNameFlag)
