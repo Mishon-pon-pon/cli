@@ -59,9 +59,11 @@ func init() {
 func FSOUpdate() {
 	cmd, _ := exec.LookPath(`powershell.exe`)
 	dir, _ := os.Executable()
+	// opsy := runtime.GOOS
+	// fmt.Println(opsy)
 	arr := strings.Split(dir, `\`)
 	arr = arr[:len(arr)-1]
-	dir = strings.Join(arr, "/")
+	dir = strings.Join(arr, "\\")
 	comand := exec.Command(cmd, "cd", dir, "\ngit pull")
 	out, err := comand.Output()
 	if err != nil {
