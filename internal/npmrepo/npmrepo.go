@@ -58,7 +58,9 @@ func UpdateNodeModules(config *Config) {
 		fmt.Println("node_modules обновлены\n")
 	} else {
 		homePath := os.Getenv("HOMEPATH")
-		file, err := os.Open(homePath + "/.npmrc")
+		// homePath = strings.Replace(homePath, "\\", "/", -1)
+		fmt.Println("C:" + homePath + "\\.npmrc")
+		file, err := os.Open("C:" + homePath + "\\.npmrc")
 		if err != nil {
 			log.Fatal(err)
 		}
