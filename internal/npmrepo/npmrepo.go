@@ -56,6 +56,7 @@ func UpdateNodeModules(config *Config) {
 		c.Stderr = os.Stderr
 
 		c.Run()
+
 		fmt.Println("node_modules обновлены\n")
 	} else {
 		homePath := os.Getenv("HOMEPATH")
