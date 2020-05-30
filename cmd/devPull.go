@@ -70,7 +70,7 @@ func DevPull() {
 	}
 
 	conf := GetConfig()
-	err = os.Chdir(conf.Repository.DevPath)
+	err = os.Chdir(conf.GitRepository.DevPath)
 	if err != nil {
 		log.Fatal(err)
 	}

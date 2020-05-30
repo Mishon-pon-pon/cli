@@ -19,7 +19,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"fso/internal/db"
-	"fso/internal/repo"
+	"fso/internal/gitrepo"
+	"fso/internal/npmrepo"
 	"fso/internal/updater"
 	"fso/internal/version"
 	"log"
@@ -35,10 +36,11 @@ var config *Config
 
 // Config ...
 type Config struct {
-	DataBase   *db.Config
-	Repository *repo.Config
-	Services   map[string]*updater.Config
-	Modules    map[string]*updater.Config
+	DataBase      *db.Config
+	GitRepository *gitrepo.Config
+	NpmRepository *npmrepo.Config
+	Services      map[string]*updater.Config
+	Modules       map[string]*updater.Config
 }
 
 // GetConfig ...
@@ -47,8 +49,9 @@ func GetConfig() *Config {
 		return config
 	}
 	config = &Config{
-		DataBase:   db.NewConfig(),
-		Repository: repo.NewConfig(),
+		DataBase:      db.NewConfig(),
+		GitRepository: gitrepo.NewConfig(),
+		NpmRepository: npmrepo.NewConfig(),
 	}
 	return config
 }

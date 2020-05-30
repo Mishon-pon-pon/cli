@@ -43,9 +43,9 @@ var serviceUpdateCmd = &cobra.Command{
 	файлов с расширением .config
 	`,
 	Run: func(cmd *cobra.Command, args []string) {
-		npmrepo.UpdateNodeModules()
-
 		config := GetConfig()
+
+		npmrepo.UpdateNodeModules(config.NpmRepository)
 
 		u := updater.NewUpdater("Service")
 

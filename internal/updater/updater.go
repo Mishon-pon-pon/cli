@@ -16,7 +16,7 @@ type IUpdate interface {
 	Update(string, string, string) error
 }
 
-// NewUpdater - constructor for Updater type
+// NewUpdater - constructor for Updater type factoryMethod
 func NewUpdater(updaterTargetName string) IUpdate {
 	var c IUpdate
 	switch updaterTargetName {

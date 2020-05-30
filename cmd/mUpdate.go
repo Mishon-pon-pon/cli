@@ -45,9 +45,9 @@ var mUpdateCmd = &cobra.Command{
 	локально, но его нет в pathFrom то программа ничего с ним не сделает.
 	`,
 	Run: func(cmd *cobra.Command, args []string) {
-		npmrepo.UpdateNodeModules()
-
 		config := GetConfig()
+
+		npmrepo.UpdateNodeModules(config.NpmRepository)
 
 		u := updater.NewUpdater("Module")
 

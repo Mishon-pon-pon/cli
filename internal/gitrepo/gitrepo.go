@@ -1,4 +1,4 @@
-package repo
+package gitrepo
 
 var conf *Config
 

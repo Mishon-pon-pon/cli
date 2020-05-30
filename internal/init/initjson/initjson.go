@@ -6,12 +6,15 @@ var DefaultJSON string = `{
 		"connectionString": "server=IP_сервера;user id=Имя_Пользователя;password=Пароль;database=База_Данных",
 		"db_manager": "mssql"
 	},
-	"Repository": {
+	"GitRepository": {
 		"remotePath": "полный путь до удаленного репозитория",
 		"devPath": "полный путь до dev репозитория",
 		"testPath": "полный путь до test репозитория"
  
 	}, 
+	"NpmRepository": {
+		"registry": "адрес вашего npm-репозитория"
+	},
 	"Services": {
 		"имя_модуля": {
 			"pathFrom": "путь до модуля в node_modules",
