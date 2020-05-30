@@ -43,6 +43,7 @@ func UpdateNodeModules(config *Config) {
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	c := exec.Command(ps, "npm config get registry")
 	out := &stdOutput{}
 	c.Stdout = out
