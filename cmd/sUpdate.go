@@ -45,7 +45,10 @@ var serviceUpdateCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		config := GetConfig()
 
-		npmrepo.UpdateNodeModules(config.NpmRepository)
+		success := npmrepo.UpdateNodeModules(config.NpmRepository)
+		if success != true {
+			return
+		}
 
 		u := updater.NewUpdater("Service")
 
