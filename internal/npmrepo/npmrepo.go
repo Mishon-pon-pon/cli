@@ -124,7 +124,7 @@ func UpdateNodeModules(config *Config) bool {
 
 			if errorput.errMsg != "" {
 				fmt.Println(errorput.errMsg)
-				fmt.Println("2node_modules не обновлены, продолжить?...(y/n)")
+				fmt.Println("node_modules не обновлены, продолжить?...(y/n)")
 				fmt.Fscan(os.Stdin, &userInput)
 				if strings.ToLower(userInput) != "y" {
 					return false
@@ -168,7 +168,7 @@ func UpdateNodeModules(config *Config) bool {
 
 			if errorput.errMsg != "" {
 				fmt.Println(errorput.errMsg)
-				fmt.Println("1node_modules не обновлены, продолжить?...(y/n)")
+				fmt.Println("node_modules не обновлены, продолжить?...(y/n)")
 				fmt.Fscan(os.Stdin, &userInput)
 				if strings.ToLower(userInput) != "y" {
 					return false
@@ -193,7 +193,7 @@ func UpdateNodeModules(config *Config) bool {
 
 			if errorput.errMsg != "" {
 				fmt.Println(errorput.errMsg)
-				fmt.Println("2node_modules не обновлены, продолжить?...(y/n)")
+				fmt.Println("node_modules не обновлены, продолжить?...(y/n)")
 				fmt.Fscan(os.Stdin, &userInput)
 				if strings.ToLower(userInput) != "y" {
 					return false
