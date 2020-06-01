@@ -6,6 +6,9 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
+
+	"github.com/briandowns/spinner"
 )
 
 // Update ...
@@ -13,10 +16,13 @@ func (m *Module) Update(serviceName, from, in string) error {
 
 	fmt.Println("Обновление модуля проекта...")
 
-	if err := m.copyModuleInternal(serviceName, from, in); err != nil {
+	s := spinner.New(spinner.CharSets[43], 100*time.Millisecond)
+	s.Color("green")
+	s.Start()
+	if err := m.copyModuleInternal(serviceName, from, in, s); err != nil {
 		return err
 	}
-
+	s.Stop()
 	return nil
 }
 
@@ -39,7 +45,13 @@ func copyFile(from, in string) error {
 	return nil
 }
 
-func (m *Module) copyModuleInternal(serviceName, from, in string) error {
+func (m *Module) copyModuleInternal(serviceName, from, in string, s *spinner.Spinner) error {
+	_, err := os.Stat(from)
+	if err != nil {
+		s.Stop()
+		fmt.Printf("Ошибка в пути к модулю %s\n", from)
+		return err
+	}
 
 	return filepath.Walk(from, func(path string, info os.FileInfo, err error) error {
 		path = strings.Replace(path, `\`, "/", -1)

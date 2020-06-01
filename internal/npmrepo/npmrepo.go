@@ -69,20 +69,66 @@ func UpdateNodeModules(config *Config) bool {
 
 	/*сравниваем регистри пользователя с регистри подтянутым из конфига*/
 	if strings.TrimSpace(config.Registry) == strings.TrimSpace(output.msg) {
-		/*просто обновляем npm пакеты*/
-		fmt.Println("Обновление node_modules...")
-		c = exec.Command(ps, "npm update")
-		c.Stdout = os.Stdout
-		c.Stderr = errorput
+		/*смотрим в c:/Users/пользователь/.npmrc и проверяем ходил ли пользователь на этот регистри*/
+		homePath := os.Getenv("HOMEPATH")
+		// homePath = strings.Replace(homePath, "\\", "/", -1)
+		// fmt.Println("C:" + homePath + "\\.npmrc")
+		file, err := os.Open("C:" + homePath + "\\.npmrc")
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer file.Close()
+		b := make([]byte, 64)
+		var fileContent string
 
-		c.Run()
+		for {
+			n, err := file.Read(b)
+			if err == io.EOF {
+				break
+			}
+			fileContent += string(b[:n])
+		}
+		if strings.Contains(fileContent, strings.Replace(config.Registry, "http:", "", -1)+":_authToken") {
+			/*просто обновляем npm пакеты*/
+			fmt.Println("Обновление node_modules...")
+			c = exec.Command(ps, "npm update")
+			c.Stdout = os.Stdout
+			c.Stderr = errorput
+			c.Stderr = os.Stderr
 
-		if errorput.errMsg != "" {
-			fmt.Println(errorput.errMsg)
-			fmt.Println("node_modules не обновлены, продолжить?...")
-			fmt.Fscan(os.Stdin, &userInput)
-			if strings.ToLower(userInput) != "y" {
-				return false
+			c.Run()
+
+			if errorput.errMsg != "" {
+				fmt.Println(errorput.errMsg)
+				fmt.Println("node_modules не обновлены, продолжить?...(y/n)")
+				fmt.Fscan(os.Stdin, &userInput)
+				if strings.ToLower(userInput) != "y" {
+					return false
+				}
+			}
+		} else {
+			fmt.Println("Вы еще не разу не логинились в npm-репозитории " + config.Registry)
+			fmt.Println("Сделайте это.")
+			example := `
+			Пример:
+			Username: ваше имя в корпаротивной системе.
+			Password: пароль с которым вы входите в виндоуз.
+			Email: корпаративный емаил(ваш_логин@pmpractice.ru).
+			`
+			fmt.Println(example)
+			c = exec.Command(ps, "npm adduser --registry="+config.Registry+" --always-auth")
+			c.Stdin = os.Stdin
+			c.Stdout = os.Stdout
+			c.Stderr = errorput
+			c.Run()
+
+			if errorput.errMsg != "" {
+				fmt.Println(errorput.errMsg)
+				fmt.Println("2node_modules не обновлены, продолжить?...(y/n)")
+				fmt.Fscan(os.Stdin, &userInput)
+				if strings.ToLower(userInput) != "y" {
+					return false
+				}
 			}
 		}
 
@@ -108,8 +154,9 @@ func UpdateNodeModules(config *Config) bool {
 			}
 			fileContent += string(b[:n])
 		}
+
 		/*если в файле есть строка совпадающая с регистри из конфига, то устанавливем его в качестве текущего*/
-		if strings.Contains(fileContent, strings.Replace(config.Registry, "http:", "", -1)) {
+		if strings.Contains(fileContent, strings.Replace(config.Registry, "http:", "", -1)+":_authToken") {
 			c = exec.Command(ps, "npm config set registry "+config.Registry)
 			c.Run()
 			fmt.Println("Обновление node_modules...")
@@ -121,7 +168,7 @@ func UpdateNodeModules(config *Config) bool {
 
 			if errorput.errMsg != "" {
 				fmt.Println(errorput.errMsg)
-				fmt.Println("node_modules не обновлены, продолжить?...(y/n)")
+				fmt.Println("1node_modules не обновлены, продолжить?...(y/n)")
 				fmt.Fscan(os.Stdin, &userInput)
 				if strings.ToLower(userInput) != "y" {
 					return false
@@ -146,7 +193,7 @@ func UpdateNodeModules(config *Config) bool {
 
 			if errorput.errMsg != "" {
 				fmt.Println(errorput.errMsg)
-				fmt.Println("node_modules не обновлены, продолжить?...(y/n)")
+				fmt.Println("2node_modules не обновлены, продолжить?...(y/n)")
 				fmt.Fscan(os.Stdin, &userInput)
 				if strings.ToLower(userInput) != "y" {
 					return false

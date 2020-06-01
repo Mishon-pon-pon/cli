@@ -18,7 +18,6 @@ import (
 	"fmt"
 	"fso/internal/npmrepo"
 	"fso/internal/updater"
-	"log"
 	"time"
 
 	"github.com/briandowns/spinner"
@@ -59,7 +58,8 @@ var serviceUpdateCmd = &cobra.Command{
 					fmt.Println("Обновление сервиса прошло успешно")
 					fmt.Println()
 				} else {
-					log.Fatal(err)
+					fmt.Println(err)
+					fmt.Println()
 				}
 			}
 		} else {
@@ -72,7 +72,8 @@ var serviceUpdateCmd = &cobra.Command{
 					s.Stop()
 					fmt.Println("Обновление сервиса прошло успешно")
 				} else {
-					log.Fatal(err)
+					fmt.Println(err)
+					fmt.Println()
 				}
 
 			} else {

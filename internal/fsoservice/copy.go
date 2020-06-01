@@ -6,6 +6,9 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
+
+	"github.com/briandowns/spinner"
 )
 
 // Update ...
@@ -17,14 +20,20 @@ func (m *Service) Update(serviceName, from, in string) error {
 
 	fmt.Println("Обновление сервиса проекта...")
 
+	s := spinner.New(spinner.CharSets[43], 100*time.Millisecond)
+	s.Color("green")
+	s.Start()
+
 	err := m.deleteService(serviceName, from, in)
 	if err != nil {
 		return err
 	}
 
-	if err = m.copyServiceInternal(serviceName, from, in); err != nil {
+	if err = m.copyServiceInternal(serviceName, from, in, s); err != nil {
 		return err
 	}
+
+	s.Stop()
 
 	return nil
 }
@@ -48,7 +57,13 @@ func copyFile(from, in string) error {
 	return nil
 }
 
-func (m *Service) copyServiceInternal(serviceName, from, in string) error {
+func (m *Service) copyServiceInternal(serviceName, from, in string, s *spinner.Spinner) error {
+	_, err := os.Stat(from)
+	if err != nil {
+		s.Stop()
+		fmt.Printf("Ошибка в пути к сервису %s\n", from)
+		return err
+	}
 
 	return filepath.Walk(from, func(path string, info os.FileInfo, err error) error {
 		path = strings.Replace(path, `\`, "/", -1)
