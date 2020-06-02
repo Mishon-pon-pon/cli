@@ -1,6 +1,7 @@
 package npmrepo
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -43,178 +44,96 @@ func NewConfig() *Config {
 
 // UpdateNodeModules ...
 func UpdateNodeModules(config *Config) bool {
-	// var input *stdInput = &stdInput{}
-	var output *stdOutput = &stdOutput{}
-	var errorput *stdError = &stdError{}
-
-	var userInput string
-	// cmd, err := exec.LookPath("cmd")
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-
-	// c := exec.Command(cmd, "npm config get registry")
-	// c.Stdout = os.Stdout
-	// c.Stderr = os.Stderr
-	// c.Run()
-	ps, err := exec.LookPath("powershell.exe")
-	if err != nil {
-		log.Fatal(err)
+	if config.Registry == "" || strings.Contains(config.Registry, "вашего") {
+		log.Fatal(errors.New("Вы не указали адрес npm репозитория(файл fso_config.json)."))
 	}
 
-	/*Смотрим какой npm регистри установлен в данный момент у пользователя*/
+	var output *stdOutput = &stdOutput{}
+	var npmrc *os.File
+	defer npmrc.Close()
+
+	homePath := os.Getenv("USERPROFILE")
+	_, err := os.Stat(homePath + "\\.npmrc")
+	if err != nil {
+		npmrc, err = os.Create(homePath + "\\.npmrc")
+		if err != nil {
+			log.Fatal(err)
+		}
+	} else {
+		npmrc, err = os.Open(homePath + "\\.npmrc")
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	buf := make([]byte, 64)
+	var npmrcContent string
+
+	for {
+		bundle, err := npmrc.Read(buf)
+		if err == io.EOF {
+			break
+		}
+		npmrcContent += string(buf[:bundle])
+	}
+
+	ps, err := exec.LookPath("powershell.exe")
+	if err != nil {
+		fmt.Println("У вас не установлен powershell")
+		log.Fatal(err)
+	}
 	c := exec.Command(ps, "npm config get registry")
 	c.Stdout = output
 	c.Run()
+	userRegistry := output.msg
 
-	/*сравниваем регистри пользователя с регистри подтянутым из конфига*/
-	if strings.TrimSpace(config.Registry) == strings.TrimSpace(output.msg) {
-		/*смотрим в c:/Users/пользователь/.npmrc и проверяем ходил ли пользователь на этот регистри*/
-		homePath := os.Getenv("HOMEPATH")
-		// homePath = strings.Replace(homePath, "\\", "/", -1)
-		// fmt.Println("C:" + homePath + "\\.npmrc")
-		file, err := os.Open("C:" + homePath + "\\.npmrc")
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer file.Close()
-		b := make([]byte, 64)
-		var fileContent string
-
-		for {
-			n, err := file.Read(b)
-			if err == io.EOF {
-				break
-			}
-			fileContent += string(b[:n])
-		}
-		if strings.Contains(fileContent, strings.Replace(config.Registry, "http:", "", -1)+":_authToken") {
-			/*просто обновляем npm пакеты*/
-			fmt.Println("Обновление node_modules...")
-			c = exec.Command(ps, "npm update")
-			c.Stdout = os.Stdout
-			c.Stderr = errorput
-			c.Stderr = os.Stderr
-
-			c.Run()
-
-			if errorput.errMsg != "" {
-				fmt.Println(errorput.errMsg)
-				fmt.Println("node_modules не обновлены, продолжить?...(y/n)")
-				fmt.Fscan(os.Stdin, &userInput)
-				if strings.ToLower(userInput) != "y" {
-					return false
-				}
-			}
-		} else {
-			fmt.Println("Вы еще не разу не логинились в npm-репозитории " + config.Registry)
-			fmt.Println("Сделайте это.")
-			example := `
-			Пример:
-			Username: ваше имя в корпаротивной системе.
-			Password: пароль с которым вы входите в виндоуз.
-			Email: корпаративный емаил(ваш_логин@pmpractice.ru).
-			`
-			fmt.Println(example)
-			c = exec.Command(ps, "npm adduser --registry="+config.Registry+" --always-auth")
-			c.Stdin = os.Stdin
-			c.Stdout = os.Stdout
-			c.Stderr = errorput
-			c.Run()
-
-			if errorput.errMsg != "" {
-				fmt.Println(errorput.errMsg)
-				fmt.Println("node_modules не обновлены, продолжить?...(y/n)")
-				fmt.Fscan(os.Stdin, &userInput)
-				if strings.ToLower(userInput) != "y" {
-					return false
-				}
-			}
-		}
-
-		fmt.Println("node_modules обновлены\n")
-
-	} else { // если текущий регистри пользователя не совпадает с регистри из конфига
-		/*смотрим в c:/Users/пользователь/.npmrc и проверяем ходил ли пользователь на этот регистри*/
-		homePath := os.Getenv("HOMEPATH")
-		// homePath = strings.Replace(homePath, "\\", "/", -1)
-		// fmt.Println("C:" + homePath + "\\.npmrc")
-		file, err := os.Open("C:" + homePath + "\\.npmrc")
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer file.Close()
-		b := make([]byte, 64)
-		var fileContent string
-
-		for {
-			n, err := file.Read(b)
-			if err == io.EOF {
-				break
-			}
-			fileContent += string(b[:n])
-		}
-
-		/*если в файле есть строка совпадающая с регистри из конфига, то устанавливем его в качестве текущего*/
-		if strings.Contains(fileContent, strings.Replace(config.Registry, "http:", "", -1)+":_authToken") {
-			c = exec.Command(ps, "npm config set registry "+config.Registry)
-			c.Run()
-			fmt.Println("Обновление node_modules...")
-			c = exec.Command(ps, "npm update")
-			c.Stdout = os.Stdout
-			c.Stderr = errorput
-
-			c.Run()
-
-			if errorput.errMsg != "" {
-				fmt.Println(errorput.errMsg)
-				fmt.Println("node_modules не обновлены, продолжить?...(y/n)")
-				fmt.Fscan(os.Stdin, &userInput)
-				if strings.ToLower(userInput) != "y" {
-					return false
-				}
-			}
-			fmt.Println("node_modules обновлены\n")
-		} else { // если в файле нет строки регистри из конфига то добавляем его пользователю
-			fmt.Println("Вы еще не разу не логинились в npm-репозитории " + config.Registry)
-			fmt.Println("Сделайте это.")
-			example := `
-			Пример:
-			Username: ваше имя в корпаротивной системе.
-			Password: пароль с которым вы входите в виндоуз.
-			Email: корпаративный емаил(ваш_логин@pmpractice.ru).
-			`
-			fmt.Println(example)
-			c = exec.Command(ps, "npm adduser --registry="+config.Registry+" --always-auth")
-			c.Stdin = os.Stdin
-			c.Stdout = os.Stdout
-			c.Stderr = errorput
-			c.Run()
-
-			if errorput.errMsg != "" {
-				fmt.Println(errorput.errMsg)
-				fmt.Println("node_modules не обновлены, продолжить?...(y/n)")
-				fmt.Fscan(os.Stdin, &userInput)
-				if strings.ToLower(userInput) != "y" {
-					return false
-				}
-			}
-		}
-		/*возвращаем регистри пользователю что был до выполения функции*/
-		c = exec.Command(ps, "npm config set registry "+output.msg)
+	if strings.Contains(npmrcContent, strings.Replace(config.Registry, "http:", "", -1)+":_authToken") {
+		c := exec.Command(ps, "npm config set registry="+config.Registry)
+		c.Stdin = os.Stdin
 		c.Stdout = os.Stdout
 		c.Stderr = os.Stderr
 		c.Run()
+
+		c = exec.Command(ps, "npm update")
+		c.Stdin = os.Stdin
+		c.Stdout = os.Stdout
+		c.Stderr = os.Stderr
+		c.Run()
+
+		c = exec.Command(ps, "npm config delete registry")
+		c.Stdin = os.Stdin
+		c.Stdout = os.Stdout
+		c.Stderr = os.Stderr
+		c.Run()
+
+		if userRegistry == "" {
+			c = exec.Command(ps, "npm config delete registry")
+		} else {
+			c = exec.Command(ps, "npm config set registry="+userRegistry)
+		}
+		c.Stdin = os.Stdin
+		c.Stdout = os.Stdout
+		c.Stderr = os.Stderr
+		c.Run()
+
+		return true
+	} else {
+		fmt.Println("Вы не залогированы в", config.Registry)
+		fmt.Println("Для начала залогинтесь. Далее повторите попытку.")
+		example := `
+			Пример:
+			Username: ваше имя в корпаротивной системе.
+			Password: пароль с которым вы входите в виндоуз.
+			Email: корпаративный емаил(ваш_логин@pmpractice.ru).
+			`
+		fmt.Println(example)
+		c := exec.Command(ps, "npm adduser --registry="+config.Registry+" --always-auth")
+		c.Stdin = os.Stdin
+		c.Stdout = os.Stdout
+		c.Stderr = os.Stderr
+
+		c.Run()
 	}
 
-	// o, err := c.Output()
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// if string(o) != "" {
-	// 	fmt.Println(string(o))
-	// } else {
-	// 	// fmt.Println("Нет изменений в текущей версии модуля")
-	// }
-	return true
+	return false
 }
